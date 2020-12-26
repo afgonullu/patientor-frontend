@@ -1,40 +1,40 @@
-import React from "react";
-import axios from "axios";
-import { Container, Table, Button } from "semantic-ui-react";
+import React from "react"
+import axios from "axios"
+import { Container, Table, Button } from "semantic-ui-react"
 
-import { PatientFormValues } from "../AddPatientModal/AddPatientForm";
-import AddPatientModal from "../AddPatientModal";
-import { Patient } from "../types";
-import { apiBaseUrl } from "../constants";
-import HealthRatingBar from "../components/HealthRatingBar";
-import { useStateValue } from "../state";
+import { PatientFormValues } from "../AddPatientModal/AddPatientForm"
+import AddPatientModal from "../AddPatientModal"
+import { Patient } from "../types"
+import { apiBaseUrl } from "../constants"
+import HealthRatingBar from "../components/HealthRatingBar"
+import { useStateValue } from "../state"
 
 const PatientListPage: React.FC = () => {
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients }, dispatch] = useStateValue()
 
-  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | undefined>();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false)
+  const [error, setError] = React.useState<string | undefined>()
 
-  const openModal = (): void => setModalOpen(true);
+  const openModal = (): void => setModalOpen(true)
 
   const closeModal = (): void => {
-    setModalOpen(false);
-    setError(undefined);
-  };
+    setModalOpen(false)
+    setError(undefined)
+  }
 
   const submitNewPatient = async (values: PatientFormValues) => {
     try {
       const { data: newPatient } = await axios.post<Patient>(
-        `${apiBaseUrl}/patients`,
+        `${apiBaseUrl}/api/patients`,
         values
-      );
-      dispatch({ type: "ADD_PATIENT", payload: newPatient });
-      closeModal();
+      )
+      dispatch({ type: "ADD_PATIENT", payload: newPatient })
+      closeModal()
     } catch (e) {
-      console.error(e.response.data);
-      setError(e.response.data.error);
+      console.error(e.response.data)
+      setError(e.response.data.error)
     }
-  };
+  }
 
   return (
     <div className="App">
@@ -71,7 +71,7 @@ const PatientListPage: React.FC = () => {
       />
       <Button onClick={() => openModal()}>Add New Patient</Button>
     </div>
-  );
-};
+  )
+}
 
-export default PatientListPage;
+export default PatientListPage
