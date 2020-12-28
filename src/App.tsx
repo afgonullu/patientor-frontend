@@ -1,16 +1,30 @@
 import React from "react"
 import axios from "axios"
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom"
+import { Route, Link, Switch, useRouteMatch } from "react-router-dom"
 import { Button, Divider, Header, Container } from "semantic-ui-react"
 
 import { apiBaseUrl } from "./constants"
 import { useStateValue } from "./state"
-import { Patient } from "./types"
+import { Patient, Gender } from "./types"
 
 import PatientListPage from "./PatientListPage"
+import PatientProfile from "./PatientProfile"
 
-const App: React.FC = () => {
-  const [, dispatch] = useStateValue()
+const App: React.FC = (): JSX.Element => {
+  const [{ patients }, dispatch] = useStateValue()
+
+  const patientMatch = useRouteMatch<{ id: string }>("/patients/:id")
+  const patientProfile = patientMatch
+    ? patients[patientMatch.params.id]
+    : {
+        id: "string;",
+        name: "string;",
+        occupation: "string;",
+        gender: Gender.Male,
+        ssn: "string;",
+        dateOfBirth: "string;",
+      }
+
   React.useEffect(() => {
     axios.get<void>(`${apiBaseUrl}/ping`)
 
@@ -29,18 +43,19 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <Router>
-        <Container>
-          <Header as="h1">Patientor</Header>
-          <Button as={Link} to="/" primary>
-            Home
-          </Button>
-          <Divider hidden />
-          <Switch>
-            <Route path="/" render={() => <PatientListPage />} />
-          </Switch>
-        </Container>
-      </Router>
+      <Container>
+        <Header as="h1">Patientor</Header>
+        <Button as={Link} to="/" primary>
+          Home
+        </Button>
+        <Divider hidden />
+        <Switch>
+          <Route path="/patients/:id">
+            <PatientProfile patientProfile={patientProfile} />
+          </Route>
+          <Route path="/" render={() => <PatientListPage />} />
+        </Switch>
+      </Container>
     </div>
   )
 }

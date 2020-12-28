@@ -1,26 +1,27 @@
-import React from "react";
-import { Grid, Button } from "semantic-ui-react";
-import { Field, Formik, Form } from "formik";
+/* eslint-disable @typescript-eslint/member-delimiter-style */
+import React from "react"
+import { Grid, Button } from "semantic-ui-react"
+import { Field, Formik, Form } from "formik"
 
-import { TextField, SelectField, GenderOption } from "./FormField";
-import { Gender, Patient } from "../types";
+import { TextField, SelectField, GenderOption } from "./FormField"
+import { Gender, Patient } from "../types"
 
 /*
  * use type Patient, but omit id and entries,
  * because those are irrelevant for new patient object.
  */
-export type PatientFormValues = Omit<Patient, "id" | "entries">;
+export type PatientFormValues = Omit<Patient, "id" | "entries">
 
 interface Props {
-  onSubmit: (values: PatientFormValues) => void;
-  onCancel: () => void;
+  onSubmit: (values: PatientFormValues) => void
+  onCancel: () => void
 }
 
 const genderOptions: GenderOption[] = [
   { value: Gender.Male, label: "Male" },
   { value: Gender.Female, label: "Female" },
-  { value: Gender.Other, label: "Other" }
-];
+  { value: Gender.Other, label: "Other" },
+]
 
 export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
   return (
@@ -30,25 +31,25 @@ export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
         ssn: "",
         dateOfBirth: "",
         occupation: "",
-        gender: Gender.Other
+        gender: Gender.Other,
       }}
       onSubmit={onSubmit}
-      validate={values => {
-        const requiredError = "Field is required";
-        const errors: { [field: string]: string } = {};
+      validate={(values) => {
+        const requiredError = "Field is required"
+        const errors: { [field: string]: string } = {}
         if (!values.name) {
-          errors.name = requiredError;
+          errors.name = requiredError
         }
         if (!values.ssn) {
-          errors.ssn = requiredError;
+          errors.ssn = requiredError
         }
         if (!values.dateOfBirth) {
-          errors.dateOfBirth = requiredError;
+          errors.dateOfBirth = requiredError
         }
         if (!values.occupation) {
-          errors.occupation = requiredError;
+          errors.occupation = requiredError
         }
-        return errors;
+        return errors
       }}
     >
       {({ isValid, dirty }) => {
@@ -78,11 +79,7 @@ export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               name="occupation"
               component={TextField}
             />
-            <SelectField
-              label="Gender"
-              name="gender"
-              options={genderOptions}
-            />
+            <SelectField label="Gender" name="gender" options={genderOptions} />
             <Grid>
               <Grid.Column floated="left" width={5}>
                 <Button type="button" onClick={onCancel} color="red">
@@ -101,10 +98,10 @@ export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               </Grid.Column>
             </Grid>
           </Form>
-        );
+        )
       }}
     </Formik>
-  );
-};
+  )
+}
 
-export default AddPatientForm;
+export default AddPatientForm

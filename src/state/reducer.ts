@@ -1,15 +1,20 @@
-import { State } from "./state";
-import { Patient } from "../types";
+/* eslint-disable @typescript-eslint/member-delimiter-style */
+import { State } from "./state"
+import { Patient } from "../types"
 
 export type Action =
   | {
-      type: "SET_PATIENT_LIST";
-      payload: Patient[];
+      type: "SET_PATIENT_LIST"
+      payload: Patient[]
     }
   | {
-      type: "ADD_PATIENT";
-      payload: Patient;
-    };
+      type: "ADD_OR_UPDATE"
+      payload: Patient
+    }
+  | {
+      type: "ADD_PATIENT"
+      payload: Patient
+    }
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -21,18 +26,28 @@ export const reducer = (state: State, action: Action): State => {
             (memo, patient) => ({ ...memo, [patient.id]: patient }),
             {}
           ),
-          ...state.patients
-        }
-      };
+          // ...state.patients,
+        },
+      }
     case "ADD_PATIENT":
       return {
         ...state,
         patients: {
           ...state.patients,
-          [action.payload.id]: action.payload
-        }
-      };
+          [action.payload.id]: action.payload,
+        },
+      }
+    case "ADD_OR_UPDATE":
+      return state.patients[action.payload.id]
+        ? state
+        : {
+            ...state,
+            patients: {
+              ...state.patients,
+              [action.payload.id]: action.payload,
+            },
+          }
     default:
-      return state;
+      return state
   }
-};
+}
