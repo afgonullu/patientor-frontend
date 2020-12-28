@@ -4,7 +4,7 @@ import { Route, Link, Switch, useRouteMatch } from "react-router-dom"
 import { Button, Divider, Header, Container } from "semantic-ui-react"
 
 import { apiBaseUrl } from "./constants"
-import { useStateValue } from "./state"
+import { useStateValue, setPatients } from "./state"
 import { Patient, Gender } from "./types"
 
 import PatientListPage from "./PatientListPage"
@@ -33,7 +33,7 @@ const App: React.FC = (): JSX.Element => {
         const { data: patientListFromApi } = await axios.get<Patient[]>(
           `${apiBaseUrl}/api/patients`
         )
-        dispatch({ type: "SET_PATIENT_LIST", payload: patientListFromApi })
+        dispatch(setPatients(patientListFromApi))
       } catch (e) {
         console.error(e)
       }

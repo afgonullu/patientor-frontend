@@ -16,6 +16,10 @@ export type Action =
       payload: Patient
     }
 
+export const setPatients = (payload: Patient[]): Action => {
+  return { type: "SET_PATIENT_LIST", payload: payload }
+}
+
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "SET_PATIENT_LIST":
