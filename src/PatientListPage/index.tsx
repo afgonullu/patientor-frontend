@@ -10,7 +10,8 @@ import { apiBaseUrl } from "../constants"
 import HealthRatingBar from "../components/HealthRatingBar"
 import { useStateValue } from "../state"
 
-const PatientListPage: React.FC = () => {
+const PatientListPage: React.FC = (props) => {
+  console.log(props)
   const [{ patients }, dispatch] = useStateValue()
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false)

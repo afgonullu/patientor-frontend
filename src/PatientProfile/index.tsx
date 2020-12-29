@@ -1,74 +1,72 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 import React from "react"
 import axios from "axios"
-import { useParams } from "react-router-dom"
-import { useStateValue } from "../state"
+import { useStateValue, setPatients, setDiagnoses } from "../state"
 import { apiBaseUrl } from "../constants"
-import { Patient } from "../types"
+import { Diagnose, Patient } from "../types"
+import { match } from "react-router"
+import EntryDetails from "../components/EntryDetails"
 
 interface Props {
-  patientProfile: Patient
+  match: match<{ id: string }>
 }
 
-const PatientProfile: React.FC<Props> = ({ patientProfile }) => {
-  const [{ patients }, dispatch] = useStateValue()
-  const { id } = useParams<{ id: string }>()
+const PatientProfile: React.FC<Props> = (props) => {
+  console.log(props)
+  const [{ patients, diagnoses }, dispatch] = useStateValue()
+  console.log("now patients")
+  console.log(patients)
 
-  //   React.useEffect(() => {
-  //     const fetchPatient = async () => {
-  //       try {
-  //         const { data: patientFromApi } = await axios.get<Patient>(
-  //           `${apiBaseUrl}/api/patients/${id}`
-  //         )
-  //         console.log(patientFromApi)
-  //         console.log(patients)
-  //         dispatch({ type: "ADD_OR_UPDATE", payload: patientFromApi })
-  //         console.log(patients)
-  //       } catch (e) {
-  //         console.error(e)
-  //       }
-  //     }
-  //     fetchPatient()
-  //   }, [dispatch, id, patients])
-
-  const { name, gender, occupation, dateOfBirth } = patientProfile
-
-  //   if (patients === undefined) {
-  //     return <h1>patients null</h1>
-  //   }
-
-  //   if (id === null) {
-  //     return <h1>no id</h1>
-  //   }
-
-  const fetchData = () => {
-    const fetchPatient = async () => {
-      try {
-        const { data: patientFromApi } = await axios.get<Patient>(
-          `${apiBaseUrl}/api/patients/${id}`
-        )
-        console.log(patientFromApi)
-        console.log(patients)
-        dispatch({ type: "ADD_OR_UPDATE", payload: patientFromApi })
-        console.log(patients)
-      } catch (e) {
-        console.error(e)
-      }
+  React.useEffect(() => {
+    const fetchMyAPI = async () => {
+      const { data: diagnosesFromApi } = await axios.get<Diagnose[]>(
+        `${apiBaseUrl}/api/diagnoses`
+      )
+      dispatch(setDiagnoses(diagnosesFromApi))
+      // const { data: patientListFromApi } = await axios.get<Patient[]>(
+      //   `${apiBaseUrl}/api/patients`
+      // )
+      // dispatch(setPatients(patientListFromApi))
     }
-    fetchPatient()
-  }
 
-  if (!patientProfile) {
-    return <div>Undefined</div>
+    fetchMyAPI()
+  }, [dispatch])
+
+  const { name, gender, entries, occupation, dateOfBirth, ssn } = patients[
+    props.match.params.id
+  ]
+
+  if (
+    Object.keys(diagnoses).length === 0 ||
+    Object.keys(patients).length === 0
+  ) {
+    return <h1>loading...</h1>
   }
   return (
     <div>
       <h2>
         {name} - {gender}
       </h2>
+      <p>{ssn}</p>
       <h3>Occupation : {occupation}</h3>
       <p>Date of Birth : {dateOfBirth}</p>
-      <button onClick={fetchData}>fetch</button>
+      <h3>entries</h3>
+      {entries.map((entry) => (
+        <div key={entry.id}>
+          {/* <p>
+            {entry.date} - {entry.description}
+          </p>
+          <ul>
+            {entry.diagnosisCodes?.map((diag) => (
+              <li>
+                {diag} - {diagnoses[diag].name}
+              </li>
+            ))}
+          </ul> */}
+          <EntryDetails entry={entry} />
+        </div>
+      ))}
     </div>
   )
 }

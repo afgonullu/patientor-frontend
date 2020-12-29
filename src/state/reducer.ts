@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 import { State } from "./state"
-import { Patient } from "../types"
+import { Diagnose, Patient } from "../types"
 
 export type Action =
   | {
       type: "SET_PATIENT_LIST"
       payload: Patient[]
+    }
+  | {
+      type: "SET_DIAGNOSES_LIST"
+      payload: Diagnose[]
     }
   | {
       type: "ADD_OR_UPDATE"
@@ -19,6 +23,9 @@ export type Action =
 export const setPatients = (payload: Patient[]): Action => {
   return { type: "SET_PATIENT_LIST", payload: payload }
 }
+export const setDiagnoses = (payload: Diagnose[]): Action => {
+  return { type: "SET_DIAGNOSES_LIST", payload: payload }
+}
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -31,6 +38,16 @@ export const reducer = (state: State, action: Action): State => {
             {}
           ),
           // ...state.patients,
+        },
+      }
+    case "SET_DIAGNOSES_LIST":
+      return {
+        ...state,
+        diagnoses: {
+          ...action.payload.reduce(
+            (memo, diagnose) => ({ ...memo, [diagnose.code]: diagnose }),
+            {}
+          ),
         },
       }
     case "ADD_PATIENT":
