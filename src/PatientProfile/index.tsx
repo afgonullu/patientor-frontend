@@ -4,9 +4,12 @@ import React from "react"
 import axios from "axios"
 import { useStateValue, setPatients, setDiagnoses } from "../state"
 import { apiBaseUrl } from "../constants"
-import { Diagnose, Patient } from "../types"
+import { Diagnose, HealthCheckEntry, Patient } from "../types"
 import { match } from "react-router"
 import EntryDetails from "../components/EntryDetails"
+import AddEntryModal from "../AddEntryModal"
+import { Button } from "semantic-ui-react"
+import { EntryFormValues } from "../AddEntryModal/AddEntryForm"
 
 interface Props {
   match: match<{ id: string }>
@@ -17,6 +20,36 @@ const PatientProfile: React.FC<Props> = (props) => {
   const [{ patients, diagnoses }, dispatch] = useStateValue()
   console.log("now patients")
   console.log(patients)
+
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false)
+  const [error, setError] = React.useState<string | undefined>()
+
+  const openModal = (): void => setModalOpen(true)
+
+  const closeModal = (): void => {
+    setModalOpen(false)
+    setError(undefined)
+  }
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      console.log(values)
+      const { data: newEntry } = await axios.post<HealthCheckEntry>(
+        `${apiBaseUrl}/api/patients/${props.match.params.id}/entries/`,
+        values
+      )
+      dispatch({
+        type: "ADD_ENTRY",
+        id: props.match.params.id,
+        payload: newEntry,
+      })
+      console.log(newEntry)
+      closeModal()
+    } catch (e) {
+      console.error(e.response.data)
+      setError(e.response.data.error)
+    }
+  }
 
   React.useEffect(() => {
     const fetchMyAPI = async () => {
@@ -67,6 +100,13 @@ const PatientProfile: React.FC<Props> = (props) => {
           <EntryDetails entry={entry} />
         </div>
       ))}
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button onClick={() => openModal()}>Add New Entry</Button>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 import { State } from "./state"
-import { Diagnose, Patient } from "../types"
+import { Diagnose, HealthCheckEntry, Patient } from "../types"
 
 export type Action =
   | {
@@ -18,6 +18,11 @@ export type Action =
   | {
       type: "ADD_PATIENT"
       payload: Patient
+    }
+  | {
+      type: "ADD_ENTRY"
+      id: string
+      payload: HealthCheckEntry
     }
 
 export const setPatients = (payload: Patient[]): Action => {
@@ -56,6 +61,17 @@ export const reducer = (state: State, action: Action): State => {
         patients: {
           ...state.patients,
           [action.payload.id]: action.payload,
+        },
+      }
+    case "ADD_ENTRY":
+      const patient = state.patients[action.id]
+      delete state.patients[action.id]
+      patient.entries.push(action.payload)
+      return {
+        ...state,
+        patients: {
+          ...state.patients,
+          [action.id]: patient,
         },
       }
     case "ADD_OR_UPDATE":
